@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cib-analyser-consumer-deployment
+  namespace: ai
+  labels:
+    app: cib-analyser-consumer
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: cib-analyser-consumer
+  template:
+    metadata:
+      labels:
+        app: cib-analyser-consumer
+    spec:
+      containers:
+        - name: cib-analyser-consumer
+          image: dharapat.azurecr.io/cib-analyser-consumer-docker:v0.0.36 
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+
+          volumeMounts:
+            - name: host
+              mountPath: /host-d
+              readOnly: true  
+      imagePullSecrets:
+        - name: cib-registry-key      
+    
+    volumes:
+      - name: host
+        hostPath:
+          path: /sys/class/dmi/id
+          type: Directory    
